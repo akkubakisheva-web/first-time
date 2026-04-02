@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Сценарии работы эколога</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f3; color: #1a1a1a; padding: 2rem 1rem; min-height: 100vh; }
+  .container { max-width: 780px; margin: 0 auto; }
+  h1 { font-size: 20px; font-weight: 600; margin-bottom: 4px; }
+  .subtitle { font-size: 14px; color: #888; margin-bottom: 1.5rem; }
+
+  .sc-nav { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid #e5e5e2; }
+  .sc-btn { cursor: pointer; padding: 7px 13px; font-size: 13px; font-weight: 500; border: 1px solid #d0cfc7; border-radius: 20px; background: transparent; color: #666; transition: all .15s; white-space: nowrap; }
+  .sc-btn:hover { background: #f0efeb; }
+  .sc-btn.active { background: #dbeafe; color: #1d4ed8; border-color: #93c5fd; }
+
+  .sc-desc { font-size: 13px; color: #666; margin-bottom: 1.5rem; padding: 10px 14px; background: #f0efeb; border-left: 2px solid #ccc; }
+  .step-wrap { display: flex; flex-direction: column; }
+  .step-row { display: flex; gap: 14px; align-items: flex-start; }
+  .step-left { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; width: 28px; }
+  .step-circle { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; flex-shrink: 0; }
+  .step-circle.user { background: #dbeafe; color: #1d4ed8; border: 1px solid #93c5fd; }
+  .step-circle.auto { background: #dcfce7; color: #166534; border: 1px solid #86efac; }
+  .step-circle.doc  { background: #fef9c3; color: #854d0e; border: 1px solid #fde047; }
+  .step-line { width: 1px; background: #e5e5e2; flex: 1; min-height: 16px; margin: 3px 0; }
+  .step-body { flex: 1; padding-bottom: 20px; }
+  .step-title { font-size: 14px; font-weight: 500; color: #1a1a1a; margin-bottom: 4px; line-height: 1.4; }
+  .step-desc { font-size: 13px; color: #666; line-height: 1.6; }
+
+  .step-tag { display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 7px; border-radius: 4px; margin-left: 7px; vertical-align: middle; }
+  .tag-auto { background: #dcfce7; color: #166534; }
+  .tag-user { background: #dbeafe; color: #1d4ed8; }
+  .tag-doc  { background: #fef9c3; color: #854d0e; }
+  .tag-warn { background: #fee2e2; color: #991b1b; }
+
+  .legend { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid #e5e5e2; }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #888; }
+
+  .card { background: #fff; border: 1px solid #e5e5e2; border-radius: 12px; padding: 1.5rem; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>Сценарии работы эколога</h1>
+  <p class="subtitle">Пошаговый порядок действий при каждой операции с отходами</p>
+  <div class="card">
+    <div class="sc-nav" id="nav"></div>
+    <div id="sc-body"></div>
+    <div class="legend">
+      <div class="legend-item"><span class="step-tag tag-user">пользователь</span> вводит вручную</div>
+      <div class="legend-item"><span class="step-tag tag-auto">авто</span> система делает сама</div>
+      <div class="legend-item"><span class="step-tag tag-doc">документ</span> нужно прикрепить файл</div>
+      <div class="legend-item"><span class="step-tag tag-warn">проверка</span> система сигнализирует</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const scenarios = [
+  {
+    label: 'Образование отхода',
+    desc: 'Отход возник в результате производственного процесса — нужно зафиксировать факт в журнале.',
+    steps: [
+      { type: 'user', title: 'Открыть журнал движения → «Добавить запись»', desc: 'Эколог выбирает нужный объект (предприятие) и нажимает «Добавить запись».' },
+      { type: 'user', title: 'Выбрать вид отхода из списка', desc: 'Список уже заполнен из ПУО. Эколог просто выбирает нужный вид — код, группа, подгруппа и класс опасности подставляются автоматически.', tag: 'auto' },
+      { type: 'user', title: 'Выбрать отчётный период и указать дату', desc: 'Месяц или квартал — в зависимости от настройки объекта. Дату ставит эколог.' },
+      { type: 'auto', title: 'Остаток на начало подтягивается автоматически', desc: 'Система берёт «остаток на конец» из предыдущей записи этого же вида отхода. При первой записи — поле открыто для ввода.', tag: 'auto' },
+      { type: 'user', title: 'Ввести количество образованного отхода (тонны)', desc: 'Единственное числовое поле, которое вводит эколог.' },
+      { type: 'auto', title: 'Система пересчитывает остаток на конец', desc: 'Остаток на конец = начало + образовано. Пересчёт в реальном времени.', tag: 'auto' },
+      { type: 'auto', title: 'Проверка лимита из ПУО', desc: 'Если нарастающее образование за год превышает лимит — появляется предупреждение. Запись сохраняется, но помечается.', tag: 'warn' },
+      { type: 'user', title: 'Сохранить запись', desc: 'Запись фиксируется в журнале. Данные готовы для попадания в отчёт.' },
+    ]
+  },
+  {
+    label: 'Передача подрядчику',
+    desc: 'Предприятие передаёт отход лицензированной организации — на переработку, обезвреживание или полигон.',
+    steps: [
+      { type: 'user', title: 'Открыть запись нужного вида отхода за период', desc: 'Найти в журнале существующую запись или создать новую, если за этот период записи ещё не было.' },
+      { type: 'user', title: 'Развернуть раздел «Передача»', desc: 'Разделы записи свёрнуты по умолчанию. Эколог раскрывает только нужный.' },
+      { type: 'user', title: 'Ввести количество переданного отхода (тонны)', desc: 'Общее количество. Если часть идёт на экспорт — отдельное поле «из них по экспорту».' },
+      { type: 'user', title: 'Выбрать контрагента из справочника', desc: 'Поиск по БИН или названию. Наименование подставляется автоматически после выбора.', tag: 'auto' },
+      { type: 'auto', title: 'Проверка лицензии контрагента', desc: 'Если лицензия истекла или отсутствует — система показывает предупреждение.', tag: 'warn' },
+      { type: 'user', title: 'Указать номер и реквизиты договора', desc: 'Обязательное поле — попадает в отчётную форму в столбец «договор сделки об отчуждении».' },
+      { type: 'doc',  title: 'Прикрепить акт приёма-передачи', desc: 'Скан или PDF. При первой передаче этому контрагенту — также копия его лицензии.', tag: 'doc' },
+      { type: 'auto', title: 'Остаток на конец пересчитан', desc: 'Переданное вычитается из остатка автоматически.', tag: 'auto' },
+      { type: 'user', title: 'Сохранить запись', desc: 'Контрагент, количество и договор зафиксированы. Готово для отчёта.' },
+    ]
+  },
+  {
+    label: 'Получение от контрагента',
+    desc: 'Предприятие принимает отходы от другого юридического или физического лица.',
+    steps: [
+      { type: 'user', title: 'Открыть или создать запись за период', desc: 'Выбрать вид принимаемого отхода. Если за период запись уже есть — открыть её.' },
+      { type: 'user', title: 'Развернуть раздел «Получено»', desc: '' },
+      { type: 'user', title: 'Ввести количество полученного отхода (тонны)', desc: 'Общее количество. Если поступление из-за рубежа — отдельное поле «из них по импорту».' },
+      { type: 'user', title: 'Выбрать контрагента-отправителя из справочника', desc: 'Поиск по БИН. Если контрагент новый — сначала добавить в справочник.' },
+      { type: 'user', title: 'Указать реквизиты договора получения', desc: 'Номер и дата договора — обязательное поле для отчёта.' },
+      { type: 'doc',  title: 'Прикрепить акт и паспорт отхода от отправителя', desc: 'Паспорт опасного отхода обязателен если принимается опасный отход.', tag: 'doc' },
+      { type: 'auto', title: 'Остаток на конец пересчитан', desc: 'Полученное прибавляется к остатку.', tag: 'auto' },
+      { type: 'user', title: 'Сохранить запись', desc: '' },
+    ]
+  },
+  {
+    label: 'Восстановление / переработка',
+    desc: 'Предприятие само перерабатывает отход: повторно использует, перерабатывает, утилизирует или обезвреживает.',
+    steps: [
+      { type: 'user', title: 'Открыть запись нужного вида отхода за период', desc: '' },
+      { type: 'user', title: 'Развернуть раздел «Восстановлено»', desc: '' },
+      { type: 'user', title: 'Выбрать технологию восстановления', desc: 'Список технологий загружен из ПУО. Варианты: повторно использовано, переработано, утилизировано, с извлечением энергии, другим способом.' },
+      { type: 'user', title: 'Ввести количество по каждому способу (тонны)', desc: 'Заполняются только применимые строки. Остальные оставить пустыми.' },
+      { type: 'user', title: 'Для неопасных: заполнить «перешло в вторсырьё» и «отсортировано»', desc: 'Эти два поля присутствуют только в журнале неопасных отходов.' },
+      { type: 'auto', title: 'Остаток на конец пересчитан', desc: 'Восстановленное вычитается из остатка.', tag: 'auto' },
+      { type: 'user', title: 'Сохранить запись', desc: 'Технология фиксируется для ПЭК-отчёта.' },
+    ]
+  },
+  {
+    label: 'Удаление на объекте',
+    desc: 'Отход захоронен или уничтожен на собственном объекте предприятия — полигоне, хвостохранилище.',
+    steps: [
+      { type: 'user', title: 'Открыть запись нужного вида отхода за период', desc: '' },
+      { type: 'user', title: 'Развернуть раздел «Удалено»', desc: '' },
+      { type: 'user', title: 'Выбрать объект удаления из справочника', desc: 'Список объектов загружен из ПУО: полигоны, хвостохранилища, другие. Характеристики объекта видны рядом.' },
+      { type: 'user', title: 'Ввести количество захороненного / уничтоженного (тонны)', desc: 'Два отдельных поля — «захоронено» и «уничтожено».' },
+      { type: 'auto', title: 'Система обновляет заполненность объекта удаления', desc: 'Добавляет количество к текущей заполненности полигона. При приближении к проектной мощности — предупреждение.', tag: 'warn' },
+      { type: 'auto', title: 'Остаток на конец пересчитан', desc: 'Удалённое вычитается из остатка.', tag: 'auto' },
+      { type: 'user', title: 'Сохранить запись', desc: '' },
+    ]
+  },
+  {
+    label: 'Накопление',
+    desc: 'Отход временно накапливается на территории предприятия для последующей передачи или переработки.',
+    steps: [
+      { type: 'user', title: 'Открыть запись нужного вида отхода за период', desc: '' },
+      { type: 'user', title: 'Развернуть раздел «Накоплено»', desc: '' },
+      { type: 'user', title: 'Ввести количество накопленного (тонны)', desc: 'Объём, который предприятие намеренно удерживает для последующей передачи или восстановления.' },
+      { type: 'auto', title: 'Накопленное остаётся в остатке на конец периода', desc: 'В отличие от передачи и удаления, накопление не вычитается из остатка — оно остаётся на балансе предприятия.', tag: 'auto' },
+      { type: 'user', title: 'Сохранить запись', desc: 'В отчёте накопленное отражается отдельной колонкой.' },
+    ]
+  },
+  {
+    label: 'Учёт ТМО',
+    desc: 'Остатки производства (хвосты, шлаки, некондиционная руда) с ценным компонентом — хранятся отдельно от отходов.',
+    steps: [
+      { type: 'user', title: 'Перейти в модуль «ТМО / вторсырьё»', desc: 'Это отдельный раздел системы — не журнал отходов.' },
+      { type: 'user', title: 'Создать запись ТМО', desc: 'Указать наименование, место хранения, цель хранения (обязательно — обоснование почему это не отход).' },
+      { type: 'user', title: 'Ввести объём на начало периода и поступление за период (тонны)', desc: '' },
+      { type: 'doc',  title: 'Прикрепить нормативный документ / приказ', desc: 'Основание для хранения — внутренний приказ или распоряжение о дальнейшем использовании.', tag: 'doc' },
+      { type: 'user', title: 'Указать плановую дату переработки', desc: 'Рекомендуется — система будет напоминать по мере приближения даты.' },
+      { type: 'auto', title: 'Объём на конец рассчитан', desc: 'Конец = начало + поступило − передано на переработку.', tag: 'auto' },
+      { type: 'user', title: 'Сохранить', desc: 'Данные попадают в раздел ТМО ПЭК-отчёта, не в таблицы отходов.' },
+    ]
+  },
+  {
+    label: 'Формирование отчёта',
+    desc: 'Конец периода — закрыть журнал и сформировать отчётные формы для регулятора.',
+    steps: [
+      { type: 'user', title: 'Открыть сводный журнал за период', desc: 'Просмотреть все виды отходов. Убедиться, что каждый вид имеет запись.' },
+      { type: 'auto', title: 'Система показывает виды без записей и предупреждения', desc: 'Виды отходов из ПУО без записи за период — помечены. Превышения лимитов — отмечены красным.', tag: 'warn' },
+      { type: 'user', title: 'Перейти в «Отчёты» → выбрать тип и период', desc: 'Доступны: Отчёт по инвентаризации (таблицы 2 и 3), данные для ПЭК-отчёта, вспомогательные отчёты.' },
+      { type: 'auto', title: 'Система собирает данные и проверяет комплектность', desc: 'Проверяет: у всех передач есть акты, у всех контрагентов заполнены реквизиты. Выдаёт список проблем.', tag: 'warn' },
+      { type: 'user', title: 'Устранить замечания (если есть)', desc: 'Перейти к проблемным записям по прямым ссылкам из списка замечаний. Прикрепить недостающие документы.' },
+      { type: 'user', title: 'Нажать «Сформировать» → просмотреть предпросмотр', desc: 'Отчёт отображается в браузере до скачивания.' },
+      { type: 'user', title: 'Скачать xlsx в формате регулятора', desc: 'Лист 1 — общие сведения, Таблица 2 — опасные, Таблица 3 — неопасные. Данные из карточки объекта подставлены автоматически.', tag: 'auto' },
+      { type: 'user', title: 'Закрыть период', desc: 'После закрытия записи защищены от изменений. Остатки автоматически переносятся как начало следующего периода.', tag: 'auto' },
+    ]
+  },
+];
+
+const tagMap   = { auto: 'tag-auto', user: 'tag-user', doc: 'tag-doc', warn: 'tag-warn' };
+const labelMap = { auto: 'авто', user: 'пользователь', doc: 'документ', warn: 'проверка' };
+let current = 0;
+
+function renderNav() {
+  document.getElementById('nav').innerHTML = scenarios.map((s, i) =>
+    `<button class="sc-btn${i === current ? ' active' : ''}" onclick="setScenario(${i})">${s.label}</button>`
+  ).join('');
+}
+
+function renderBody() {
+  const s = scenarios[current];
+  let html = `<div class="sc-desc">${s.desc}</div><div class="step-wrap">`;
+  s.steps.forEach((step, i) => {
+    const isLast = i === s.steps.length - 1;
+    const extraTag = step.tag ? `<span class="step-tag ${tagMap[step.tag]}">${labelMap[step.tag]}</span>` : '';
+    html += `<div class="step-row">
+      <div class="step-left">
+        <div class="step-circle ${step.type}">${i + 1}</div>
+        ${!isLast ? '<div class="step-line"></div>' : ''}
+      </div>
+      <div class="step-body">
+        <p class="step-title">${step.title}${extraTag}</p>
+        ${step.desc ? `<p class="step-desc">${step.desc}</p>` : ''}
+      </div>
+    </div>`;
+  });
+  html += '</div>';
+  document.getElementById('sc-body').innerHTML = html;
+}
+
+function setScenario(i) { current = i; renderNav(); renderBody(); }
+
+renderNav();
+renderBody();
+</script>
+</body>
+</html>
