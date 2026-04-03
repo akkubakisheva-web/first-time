@@ -7,12 +7,17 @@
   <style>
     :root {
       --bg:#f4f6fb;--card:#fff;--text:#1e2633;--muted:#6a7280;--line:#e6ebf3;
+  <title>UX-прототип: журнал отходов</title>
+  <style>
+    :root {
+      --bg:#f4f6fb;--card:#ffffff;--text:#1e2633;--muted:#6a7280;--line:#e6ebf3;
       --blue:#2f6fed;--blue-soft:#eaf1ff;--green:#1f8f4c;--green-soft:#eaf8f0;
       --amber:#9d6a00;--amber-soft:#fff6dc;--red:#b42318;--red-soft:#ffeceb;
     }
     *{box-sizing:border-box}
     body{margin:0;font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text)}
     .app{max-width:1240px;margin:0 auto;padding:20px 14px 40px}
+    .app{max-width:1200px;margin:0 auto;padding:20px 14px 40px}
     .top{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px}
     h1{margin:0;font-size:24px}
     .sub{color:var(--muted);font-size:14px;margin-top:4px}
@@ -25,6 +30,8 @@
     .layout{display:grid;grid-template-columns:280px 1fr;gap:14px}
     .panel{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:0 8px 24px rgba(16,24,40,.05)}
 
+    .layout{display:grid;grid-template-columns:270px 1fr;gap:14px}
+    .panel{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:0 8px 24px rgba(16,24,40,.05)}
     .side{padding:12px}
     .side h3{margin:6px 6px 10px;font-size:13px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.04em}
     .scenario-btn{width:100%;text-align:left;padding:10px;border:1px solid transparent;background:#fff;border-radius:10px;cursor:pointer;margin-bottom:6px;font-size:13px}
@@ -44,6 +51,10 @@
     .tag{font-size:11px;font-weight:700;padding:4px 8px;border-radius:999px;white-space:nowrap}
     .tag.user{background:var(--blue-soft);color:#1f4fb6}.tag.auto{background:var(--green-soft);color:#17653a}
     .tag.doc{background:var(--amber-soft);color:var(--amber)}.tag.warn{background:var(--red-soft);color:var(--red)}
+    .tag.user{background:var(--blue-soft);color:#1f4fb6}
+    .tag.auto{background:var(--green-soft);color:#17653a}
+    .tag.doc{background:var(--amber-soft);color:var(--amber)}
+    .tag.warn{background:var(--red-soft);color:var(--red)}
     .step-desc{font-size:14px;line-height:1.5;color:#546071;margin:0 0 12px}
 
     .fake-form{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:8px}
@@ -52,6 +63,7 @@
     .field input,.field select,.field textarea{width:100%;border:1px solid #d6deeb;border-radius:8px;padding:8px;font-size:13px;background:#fff}
     .field textarea{min-height:74px;resize:vertical}
     .full{grid-column:1/-1}
+
     .notice{border:1px solid transparent;border-radius:10px;padding:10px;font-size:13px;margin-top:8px}
     .notice.info{background:#f4f8ff;border-color:#d7e4ff;color:#2b4a88}
     .notice.warn{background:var(--red-soft);border-color:#f7c5c0;color:#8e1d13}
@@ -82,6 +94,18 @@
 
     @media (max-width:1000px){.layout{grid-template-columns:1fr}.fake-form{grid-template-columns:1fr}.filters{grid-template-columns:1fr 1fr}}
     @media (max-width:620px){.filters{grid-template-columns:1fr}}
+    .btn-primary{background:var(--blue);color:#fff}
+    .btn-secondary{background:#fff;border-color:#d6deeb;color:#354052}
+    .btn-ghost{background:#f8fafd;border-color:#e5ebf5;color:#3f4b5f}
+
+    .toast{position:fixed;right:16px;bottom:16px;background:#1f2937;color:#fff;padding:10px 12px;border-radius:10px;font-size:13px;opacity:0;transform:translateY(8px);transition:.2s;pointer-events:none}
+    .toast.show{opacity:1;transform:translateY(0)}
+
+    @media (max-width: 900px){
+      .layout{grid-template-columns:1fr}
+      .fake-form{grid-template-columns:1fr}
+      .side{position:sticky;top:0;z-index:2}
+    }
   </style>
 </head>
 <body>
@@ -209,6 +233,45 @@
     </section>
   </div>
 
+        <h1>UX-прототип: журнал операций с отходами</h1>
+        <div class="sub">Полностью кликабельный прототип без бэкенда — для тестирования удобства интерфейса.</div>
+      </div>
+      <div class="pill">Режим теста: данные не сохраняются в БД</div>
+    </div>
+
+    <div class="layout">
+      <aside class="panel side">
+        <h3>Сценарии</h3>
+        <div id="scenario-nav"></div>
+      </aside>
+
+      <main class="panel main">
+        <div class="desc" id="scenario-desc"></div>
+        <div class="progress-wrap">
+          <div class="bar"><div id="progress"></div></div>
+          <div class="step-count" id="step-count"></div>
+        </div>
+
+        <section class="step">
+          <div class="step-head">
+            <h2 class="step-title" id="step-title"></h2>
+            <span class="tag" id="step-tag"></span>
+          </div>
+          <p class="step-desc" id="step-desc"></p>
+
+          <div class="fake-form" id="fake-form"></div>
+          <div id="step-notice"></div>
+
+          <div class="actions">
+            <button class="btn-secondary" id="prev-btn">← Назад</button>
+            <button class="btn-primary" id="next-btn">Далее →</button>
+            <button class="btn-ghost" id="simulate-btn">Симулировать автопроверку</button>
+            <button class="btn-ghost" id="save-btn">Сохранить как черновик</button>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
   <div class="toast" id="toast"></div>
 
   <script>
@@ -422,6 +485,155 @@
     document.getElementById('j-reset').addEventListener('click',()=>{
       els.jPeriod.value=''; els.jType.value=''; els.jSite.value=''; els.jSearch.value='';
       renderJournal(); showToast('Фильтры журнала сброшены');
+      {
+        label:'Образование отхода',
+        desc:'Фиксация нового образования отхода в журнале. Проверьте, насколько понятны поля и подсказки пользователю.',
+        steps:[
+          {type:'user',title:'Выберите объект и вид отхода',desc:'Пользователь выбирает площадку и тип отхода. Система подставляет классификатор автоматически.', form:[
+            ['Объект','select',['Площадка №1','Площадка №2']],['Вид отхода','select',['Отработанное масло','Строительный мусор','Шлам']],
+            ['Код отхода','input','12 01 09'],['Класс опасности','select',['I','II','III','IV','V']]
+          ], notice:['info','Подсказка: упростите поиск вида отхода по коду или части названия.']},
+          {type:'user',title:'Укажите период и объём',desc:'Ввод минимального набора данных для первичной записи.', form:[
+            ['Период','select',['Январь 2026','Февраль 2026','Март 2026']],['Дата записи','input','2026-03-31'],
+            ['Количество, т','input','12.4'],['Ед. изм.','select',['тонны','кг']]
+          ]},
+          {type:'auto',title:'Система пересчитывает остаток',desc:'Остаток на конец пересчитывается в реальном времени и отображается справа.', form:[
+            ['Остаток на начало, т','input','4.0'],['Образовано, т','input','12.4'],['Остаток на конец, т','input','16.4'],
+          ], notice:['info','Автоматическая формула: остаток = начало + образовано.']},
+          {type:'warn',title:'Проверка лимита ПУО',desc:'При превышении лимита система должна показать понятное предупреждение и предложить действия.', form:[
+            ['Годовой лимит, т','input','15.0'],['Нарастающий итог, т','input','16.4']
+          ], notice:['warn','Превышен лимит: +1.4 т. UI должен явно объяснять, что делать дальше.']}
+        ]
+      },
+      {
+        label:'Передача подрядчику',
+        desc:'Пользователь оформляет передачу отхода сторонней лицензированной организации.',
+        steps:[
+          {type:'user',title:'Выберите контрагента',desc:'Найдите контрагента в справочнике, проверьте доступность выбора.', form:[
+            ['БИН/Название','input','123456789012'],['Контрагент','select',['ТОО ЭкоТранс','ТОО Рецикл KZ','АО Полигон-Сервис']],
+            ['Номер договора','input','DG-12/2026'],['Дата договора','input','2026-02-14']
+          ]},
+          {type:'doc',title:'Загрузите документы',desc:'Добавьте акт приёма-передачи и при необходимости лицензию.', form:[
+            ['Акт приёма-передачи','input','акт_март.pdf'],['Лицензия контрагента','input','license.pdf'],
+            ['Комментарий','textarea','Партия №3, маршрут С-12']
+          ]},
+          {type:'auto',title:'Пересчёт остатков',desc:'После передачи остаток должен уменьшиться автоматически.', form:[
+            ['Передано, т','input','6.0'],['Остаток до, т','input','16.4'],['Остаток после, т','input','10.4']
+          ]},
+          {type:'warn',title:'Автопроверка лицензии',desc:'Если лицензия просрочена, интерфейс должен подсветить риск.', form:[
+            ['Статус лицензии','select',['Действует','Истекает скоро','Просрочена']],['Дата окончания','input','2026-03-01']
+          ], notice:['warn','Лицензия просрочена. Проверьте, заметно ли предупреждение и следующий шаг.']}
+        ]
+      },
+      {
+        label:'Формирование отчёта',
+        desc:'Финальный сценарий: подготовка отчёта за период и проверка комплектности.',
+        steps:[
+          {type:'user',title:'Выберите тип отчёта и период',desc:'Проверьте, насколько понятна терминология и структура формы.', form:[
+            ['Тип отчёта','select',['Инвентаризация (табл.2/3)','ПЭК-отчёт','Сводный внутренний']],['Период','select',['Q1 2026','Q2 2026']],
+            ['Ответственный','input','Иванова А.А.'],['Email','input','eco@example.com']
+          ]},
+          {type:'auto',title:'Система проверяет комплектность',desc:'Ищет пропущенные акты, пустые реквизиты и несоответствия.', form:[
+            ['Проверено записей','input','24'],['Замечаний найдено','input','3']
+          ], notice:['info','Нажмите «Симулировать автопроверку», чтобы увидеть динамическое сообщение.']},
+          {type:'user',title:'Предпросмотр и экспорт',desc:'Пользователь проверяет итог и скачивает XLSX.', form:[
+            ['Формат','select',['XLSX','PDF (preview)']],['Имя файла','input','report_Q1_2026.xlsx'],['Комментарий к выгрузке','textarea','Версия для внутренней валидации']
+          ]}
+        ]
+      }
+    ];
+
+    const state = { scenario: 0, step: 0 };
+
+    const nav = document.getElementById('scenario-nav');
+    const scenarioDesc = document.getElementById('scenario-desc');
+    const stepTitle = document.getElementById('step-title');
+    const stepTag = document.getElementById('step-tag');
+    const stepDesc = document.getElementById('step-desc');
+    const fakeForm = document.getElementById('fake-form');
+    const stepNotice = document.getElementById('step-notice');
+    const progress = document.getElementById('progress');
+    const stepCount = document.getElementById('step-count');
+    const toast = document.getElementById('toast');
+
+    function showToast(text) {
+      toast.textContent = text;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 1800);
+    }
+
+    function renderNav() {
+      nav.innerHTML = scenarios.map((s, i) => `
+        <button class="scenario-btn ${i===state.scenario?'active':''}" onclick="setScenario(${i})">${s.label}</button>
+      `).join('');
+    }
+
+    function fieldHtml([label, kind, value]) {
+      if (kind === 'select') {
+        return `<div class="field"><label>${label}</label><select>${value.map(v => `<option>${v}</option>`).join('')}</select></div>`;
+      }
+      if (kind === 'textarea') {
+        return `<div class="field full"><label>${label}</label><textarea>${value||''}</textarea></div>`;
+      }
+      return `<div class="field"><label>${label}</label><input value="${value||''}" /></div>`;
+    }
+
+    function renderStep() {
+      const scenario = scenarios[state.scenario];
+      const step = scenario.steps[state.step];
+
+      scenarioDesc.textContent = scenario.desc;
+      stepTitle.textContent = step.title;
+      stepDesc.textContent = step.desc || '';
+      stepTag.className = `tag ${step.type}`;
+      stepTag.textContent = ({user:'пользователь',auto:'авто',doc:'документ',warn:'проверка'})[step.type] || step.type;
+
+      fakeForm.innerHTML = (step.form || []).map(fieldHtml).join('');
+      stepNotice.innerHTML = step.notice ? `<div class="notice ${step.notice[0]}">${step.notice[1]}</div>` : '';
+
+      const pct = Math.round(((state.step+1)/scenario.steps.length)*100);
+      progress.style.width = `${pct}%`;
+      stepCount.textContent = `Шаг ${state.step+1} из ${scenario.steps.length}`;
+
+      document.getElementById('prev-btn').disabled = state.step === 0;
+      document.getElementById('next-btn').textContent = state.step === scenario.steps.length - 1 ? 'Завершить сценарий' : 'Далее →';
+    }
+
+    function setScenario(i) {
+      state.scenario = i;
+      state.step = 0;
+      renderNav();
+      renderStep();
+      showToast('Сценарий переключён');
+    }
+
+    document.getElementById('prev-btn').addEventListener('click', () => {
+      if (state.step > 0) state.step--;
+      renderStep();
+    });
+
+    document.getElementById('next-btn').addEventListener('click', () => {
+      const steps = scenarios[state.scenario].steps;
+      if (state.step < steps.length - 1) {
+        state.step++;
+        renderStep();
+      } else {
+        showToast('Сценарий пройден. UX-тест завершён.');
+      }
+    });
+
+    document.getElementById('simulate-btn').addEventListener('click', () => {
+      const step = scenarios[state.scenario].steps[state.step];
+      if (step.type === 'warn') {
+        stepNotice.innerHTML = `<div class="notice warn">⚠️ Симуляция: обнаружена критическая ошибка в данных. Нужно исправить перед сохранением.</div>`;
+      } else {
+        stepNotice.innerHTML = `<div class="notice info">✅ Симуляция: проверка пройдена, можно продолжать.</div>`;
+      }
+      showToast('Автопроверка выполнена');
+    });
+
+    document.getElementById('save-btn').addEventListener('click', () => {
+      showToast('Черновик сохранён локально (демо-режим)');
     });
 
     renderNav();
