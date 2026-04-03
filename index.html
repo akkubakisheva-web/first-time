@@ -3,28 +3,23 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>UX-прототип: журнал, реестр ПУО и учёт отходов</title>
+  <title>UX-прототип: журнал отходов</title>
   <style>
     :root {
-      --bg:#f4f6fb;--card:#fff;--text:#1e2633;--muted:#6a7280;--line:#e6ebf3;
+      --bg:#f4f6fb;--card:#ffffff;--text:#1e2633;--muted:#6a7280;--line:#e6ebf3;
       --blue:#2f6fed;--blue-soft:#eaf1ff;--green:#1f8f4c;--green-soft:#eaf8f0;
       --amber:#9d6a00;--amber-soft:#fff6dc;--red:#b42318;--red-soft:#ffeceb;
     }
     *{box-sizing:border-box}
     body{margin:0;font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text)}
-    .app{max-width:1240px;margin:0 auto;padding:20px 14px 40px}
+    .app{max-width:1200px;margin:0 auto;padding:20px 14px 40px}
     .top{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px}
     h1{margin:0;font-size:24px}
     .sub{color:var(--muted);font-size:14px;margin-top:4px}
     .pill{background:#fff;border:1px solid var(--line);border-radius:999px;padding:8px 12px;font-size:12px;color:#4a5568}
 
-    .mode-switch{display:flex;gap:8px;margin-bottom:12px}
-    .mode-btn{padding:8px 12px;border:1px solid #d7deeb;background:#fff;border-radius:10px;font-size:13px;cursor:pointer}
-    .mode-btn.active{background:var(--blue-soft);border-color:#c8dafd;color:#1f4fb6;font-weight:600}
-
-    .layout{display:grid;grid-template-columns:280px 1fr;gap:14px}
+    .layout{display:grid;grid-template-columns:270px 1fr;gap:14px}
     .panel{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:0 8px 24px rgba(16,24,40,.05)}
-
     .side{padding:12px}
     .side h3{margin:6px 6px 10px;font-size:13px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.04em}
     .scenario-btn{width:100%;text-align:left;padding:10px;border:1px solid transparent;background:#fff;border-radius:10px;cursor:pointer;margin-bottom:6px;font-size:13px}
@@ -42,8 +37,10 @@
     .step-head{display:flex;justify-content:space-between;gap:8px;margin-bottom:8px;align-items:flex-start}
     .step-title{font-size:17px;margin:0;line-height:1.35}
     .tag{font-size:11px;font-weight:700;padding:4px 8px;border-radius:999px;white-space:nowrap}
-    .tag.user{background:var(--blue-soft);color:#1f4fb6}.tag.auto{background:var(--green-soft);color:#17653a}
-    .tag.doc{background:var(--amber-soft);color:var(--amber)}.tag.warn{background:var(--red-soft);color:var(--red)}
+    .tag.user{background:var(--blue-soft);color:#1f4fb6}
+    .tag.auto{background:var(--green-soft);color:#17653a}
+    .tag.doc{background:var(--amber-soft);color:var(--amber)}
+    .tag.warn{background:var(--red-soft);color:var(--red)}
     .step-desc{font-size:14px;line-height:1.5;color:#546071;margin:0 0 12px}
 
     .fake-form{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:8px}
@@ -52,319 +49,227 @@
     .field input,.field select,.field textarea{width:100%;border:1px solid #d6deeb;border-radius:8px;padding:8px;font-size:13px;background:#fff}
     .field textarea{min-height:74px;resize:vertical}
     .full{grid-column:1/-1}
+
     .notice{border:1px solid transparent;border-radius:10px;padding:10px;font-size:13px;margin-top:8px}
     .notice.info{background:#f4f8ff;border-color:#d7e4ff;color:#2b4a88}
     .notice.warn{background:var(--red-soft);border-color:#f7c5c0;color:#8e1d13}
 
     .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
     button{cursor:pointer;border-radius:10px;border:1px solid transparent;padding:9px 13px;font-size:13px}
-    .btn-primary{background:var(--blue);color:#fff}.btn-secondary{background:#fff;border-color:#d6deeb;color:#354052}
+    .btn-primary{background:var(--blue);color:#fff}
+    .btn-secondary{background:#fff;border-color:#d6deeb;color:#354052}
     .btn-ghost{background:#f8fafd;border-color:#e5ebf5;color:#3f4b5f}
-
-    .registry{display:none}
-    .registry.active{display:block}
-    .filters{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:10px 0 12px}
-    .filters input,.filters select{width:100%;border:1px solid #d6deeb;border-radius:8px;padding:8px;font-size:13px;background:#fff}
-    .table-wrap{overflow:auto;border:1px solid var(--line);border-radius:12px}
-    table{width:100%;border-collapse:collapse;background:#fff;min-width:940px}
-    th,td{border-bottom:1px solid #edf1f7;padding:10px 8px;font-size:13px;text-align:left;vertical-align:top}
-    th{background:#f8fafe;color:#43506a;position:sticky;top:0}
-    .chip{display:inline-block;padding:2px 8px;border-radius:999px;font-size:11px;font-weight:700}
-    .chip.green{background:var(--green-soft);color:#17653a}
-    .chip.amber{background:var(--amber-soft);color:#8a5a00}
-    .chip.red{background:var(--red-soft);color:#9f1d1d}
-
-    .legend{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
-    .legend .chip{font-weight:600}
 
     .toast{position:fixed;right:16px;bottom:16px;background:#1f2937;color:#fff;padding:10px 12px;border-radius:10px;font-size:13px;opacity:0;transform:translateY(8px);transition:.2s;pointer-events:none}
     .toast.show{opacity:1;transform:translateY(0)}
 
-    @media (max-width:1000px){.layout{grid-template-columns:1fr}.fake-form{grid-template-columns:1fr}.filters{grid-template-columns:1fr 1fr}}
-    @media (max-width:620px){.filters{grid-template-columns:1fr}}
+    @media (max-width: 900px){
+      .layout{grid-template-columns:1fr}
+      .fake-form{grid-template-columns:1fr}
+      .side{position:sticky;top:0;z-index:2}
+    }
   </style>
 </head>
 <body>
   <div class="app">
     <div class="top">
       <div>
-        <h1>UX-прототип: журнал, реестр ПУО и учёт отходов</h1>
-        <div class="sub">Кликабельный прототип для UX-тестов без БД и API.</div>
+        <h1>UX-прототип: журнал операций с отходами</h1>
+        <div class="sub">Полностью кликабельный прототип без бэкенда — для тестирования удобства интерфейса.</div>
       </div>
-      <div class="pill">Демо-режим: без серверной логики</div>
+      <div class="pill">Режим теста: данные не сохраняются в БД</div>
     </div>
 
-    <div class="mode-switch">
-      <button class="mode-btn active" id="mode-flow">Сценарии работы</button>
-      <button class="mode-btn" id="mode-registry">Реестр отходов (ПУО)</button>
-      <button class="mode-btn" id="mode-journal">Журнал учёта</button>
-    </div>
+    <div class="layout">
+      <aside class="panel side">
+        <h3>Сценарии</h3>
+        <div id="scenario-nav"></div>
+      </aside>
 
-    <section id="flow-view">
-      <div class="layout">
-        <aside class="panel side">
-          <h3>Сценарии</h3>
-          <div id="scenario-nav"></div>
-        </aside>
+      <main class="panel main">
+        <div class="desc" id="scenario-desc"></div>
+        <div class="progress-wrap">
+          <div class="bar"><div id="progress"></div></div>
+          <div class="step-count" id="step-count"></div>
+        </div>
 
-        <main class="panel main">
-          <div class="desc" id="scenario-desc"></div>
-          <div class="progress-wrap">
-            <div class="bar"><div id="progress"></div></div>
-            <div class="step-count" id="step-count"></div>
+        <section class="step">
+          <div class="step-head">
+            <h2 class="step-title" id="step-title"></h2>
+            <span class="tag" id="step-tag"></span>
           </div>
+          <p class="step-desc" id="step-desc"></p>
 
-          <section class="step">
-            <div class="step-head">
-              <h2 class="step-title" id="step-title"></h2>
-              <span class="tag" id="step-tag"></span>
-            </div>
-            <p class="step-desc" id="step-desc"></p>
-            <div class="fake-form" id="fake-form"></div>
-            <div id="step-notice"></div>
+          <div class="fake-form" id="fake-form"></div>
+          <div id="step-notice"></div>
 
-            <div class="actions">
-              <button class="btn-secondary" id="prev-btn">← Назад</button>
-              <button class="btn-primary" id="next-btn">Далее →</button>
-              <button class="btn-ghost" id="simulate-btn">Симулировать автопроверку</button>
-              <button class="btn-ghost" id="save-btn">Сохранить как черновик</button>
-            </div>
-          </section>
-        </main>
-      </div>
-    </section>
-
-    <section class="panel main registry" id="registry-view">
-      <div class="desc">Реестр отходов из ПУО: можно тестировать поиск, фильтрацию, статусы лимитов и полноту паспортов/документов.</div>
-
-      <div class="filters">
-        <input id="f-search" placeholder="Поиск: код/наименование" />
-        <select id="f-hazard"><option value="">Класс опасности (все)</option><option>I</option><option>II</option><option>III</option><option>IV</option><option>V</option></select>
-        <select id="f-site"><option value="">Площадка (все)</option><option>Площадка №1</option><option>Площадка №2</option><option>Площадка №3</option></select>
-        <select id="f-limit"><option value="">Лимит (все)</option><option>ok</option><option>near</option><option>over</option></select>
-        <button class="btn-secondary" id="f-reset">Сбросить фильтры</button>
-      </div>
-
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Код ПУО</th><th>Наименование отхода</th><th>Класс</th><th>Площадка</th>
-              <th>Годовой лимит, т</th><th>Факт (YTD), т</th><th>Паспорт/док</th><th>Статус</th>
-            </tr>
-          </thead>
-          <tbody id="registry-body"></tbody>
-        </table>
-      </div>
-      <div class="legend">
-        <span class="chip green">ok — в норме</span>
-        <span class="chip amber">near — близко к лимиту</span>
-        <span class="chip red">over — лимит превышен</span>
-      </div>
-    </section>
-
-    <section class="panel main registry" id="journal-view">
-      <div class="desc">Журнал учёта отходов: демо-версия для UX-теста создания, фильтрации и просмотра операций за период.</div>
-      <div class="filters">
-        <select id="j-period"><option value="">Период (все)</option><option>2026-03</option><option>2026-04</option></select>
-        <select id="j-type"><option value="">Операция (все)</option><option>образование</option><option>передача</option><option>получение</option><option>переработка</option></select>
-        <select id="j-site"><option value="">Площадка (все)</option><option>Площадка №1</option><option>Площадка №2</option><option>Площадка №3</option></select>
-        <input id="j-search" placeholder="Поиск: код / наименование" />
-        <button class="btn-secondary" id="j-reset">Сбросить фильтры</button>
-      </div>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Дата</th><th>Период</th><th>Площадка</th><th>Код</th><th>Отход</th>
-              <th>Операция</th><th>Кол-во, т</th><th>Остаток на конец, т</th><th>Документ</th>
-            </tr>
-          </thead>
-          <tbody id="journal-body"></tbody>
-        </table>
-      </div>
-    </section>
+          <div class="actions">
+            <button class="btn-secondary" id="prev-btn">← Назад</button>
+            <button class="btn-primary" id="next-btn">Далее →</button>
+            <button class="btn-ghost" id="simulate-btn">Симулировать автопроверку</button>
+            <button class="btn-ghost" id="save-btn">Сохранить как черновик</button>
+          </div>
+        </section>
+      </main>
+    </div>
   </div>
-
   <div class="toast" id="toast"></div>
 
   <script>
     const scenarios = [
-      { label:'Образование отхода', desc:'Фиксация нового образования отхода в журнале.', steps:[
-        {type:'user',title:'Выберите объект и вид отхода',desc:'Пользователь выбирает площадку и тип отхода.', form:[['Объект','select',['Площадка №1','Площадка №2']],['Вид отхода','select',['Отработанное масло','Шлам']],['Код отхода','input','12 01 09'],['Класс опасности','select',['I','II','III','IV','V']]], notice:['info','Справочник отходов подтягивается из ПУО.']},
-        {type:'user',title:'Укажите период и объём',desc:'Минимальный набор данных для записи.', form:[['Период','select',['Март 2026','Апрель 2026']],['Дата','input','2026-03-31'],['Количество, т','input','12.4'],['Ед. изм.','select',['тонны']]]},
-        {type:'auto',title:'Система пересчитывает остаток',desc:'Остаток обновляется автоматически.', form:[['Остаток на начало, т','input','4.0'],['Образовано, т','input','12.4'],['Остаток на конец, т','input','16.4']]},
-        {type:'warn',title:'Проверка лимита ПУО',desc:'При превышении лимита система показывает предупреждение.', form:[['Годовой лимит, т','input','15.0'],['Нарастающий итог, т','input','16.4']], notice:['warn','Лимит превышен: +1.4 т.']}
-      ]},
-      { label:'Передача подрядчику', desc:'Оформление передачи отхода лицензированной организации.', steps:[
-        {type:'user',title:'Выберите контрагента',desc:'Поиск и выбор контрагента в справочнике.', form:[['БИН/Название','input','123456789012'],['Контрагент','select',['ТОО ЭкоТранс','ТОО Рецикл KZ']],['Номер договора','input','DG-12/2026'],['Дата договора','input','2026-02-14']]},
-        {type:'doc',title:'Загрузите документы',desc:'Прикрепите акт и лицензию при необходимости.', form:[['Акт','input','акт_март.pdf'],['Лицензия','input','license.pdf'],['Комментарий','textarea','Партия №3']]},
-        {type:'auto',title:'Пересчёт остатков',desc:'Переданное количество вычитается.', form:[['Передано, т','input','6.0'],['Остаток до, т','input','16.4'],['Остаток после, т','input','10.4']]},
-        {type:'warn',title:'Автопроверка лицензии',desc:'Если лицензия истекла — предупреждение.', form:[['Статус лицензии','select',['Действует','Просрочена']],['Дата окончания','input','2026-03-01']], notice:['warn','Лицензия просрочена.']}
-      ]}
-    ];
-
-    const registryRows = [
-      {code:'12 01 09',name:'Отработанное масло',hazard:'III',site:'Площадка №1',limit:120,fact:94,docs:'паспорт + акт',status:'ok'},
-      {code:'10 01 02',name:'Зола-унос ТЭЦ',hazard:'IV',site:'Площадка №2',limit:300,fact:276,docs:'паспорт',status:'near'},
-      {code:'07 06 13',name:'Шлам гальванический',hazard:'II',site:'Площадка №1',limit:40,fact:43,docs:'паспорт + договор',status:'over'},
-      {code:'17 09 04',name:'Смешанные стройотходы',hazard:'V',site:'Площадка №3',limit:500,fact:188,docs:'акт',status:'ok'},
-      {code:'15 01 10',name:'Тара с остатками ЛВЖ',hazard:'III',site:'Площадка №2',limit:60,fact:55,docs:'паспорт + акт',status:'near'}
-    ];
-
-    const journalRows = [
-      {date:'2026-03-05',period:'2026-03',site:'Площадка №1',code:'12 01 09',name:'Отработанное масло',op:'образование',qty:12.4,balance:16.4,doc:'акт-03-05.pdf'},
-      {date:'2026-03-12',period:'2026-03',site:'Площадка №1',code:'12 01 09',name:'Отработанное масло',op:'передача',qty:6.0,balance:10.4,doc:'акт-передачи.pdf'},
-      {date:'2026-03-16',period:'2026-03',site:'Площадка №2',code:'10 01 02',name:'Зола-унос ТЭЦ',op:'переработка',qty:20.0,balance:256.0,doc:'переработка-03.pdf'},
-      {date:'2026-04-02',period:'2026-04',site:'Площадка №3',code:'17 09 04',name:'Смешанные стройотходы',op:'получение',qty:9.2,balance:197.2,doc:'получение-04.pdf'}
+      {
+        label:'Образование отхода',
+        desc:'Фиксация нового образования отхода в журнале. Проверьте, насколько понятны поля и подсказки пользователю.',
+        steps:[
+          {type:'user',title:'Выберите объект и вид отхода',desc:'Пользователь выбирает площадку и тип отхода. Система подставляет классификатор автоматически.', form:[
+            ['Объект','select',['Площадка №1','Площадка №2']],['Вид отхода','select',['Отработанное масло','Строительный мусор','Шлам']],
+            ['Код отхода','input','12 01 09'],['Класс опасности','select',['I','II','III','IV','V']]
+          ], notice:['info','Подсказка: упростите поиск вида отхода по коду или части названия.']},
+          {type:'user',title:'Укажите период и объём',desc:'Ввод минимального набора данных для первичной записи.', form:[
+            ['Период','select',['Январь 2026','Февраль 2026','Март 2026']],['Дата записи','input','2026-03-31'],
+            ['Количество, т','input','12.4'],['Ед. изм.','select',['тонны','кг']]
+          ]},
+          {type:'auto',title:'Система пересчитывает остаток',desc:'Остаток на конец пересчитывается в реальном времени и отображается справа.', form:[
+            ['Остаток на начало, т','input','4.0'],['Образовано, т','input','12.4'],['Остаток на конец, т','input','16.4'],
+          ], notice:['info','Автоматическая формула: остаток = начало + образовано.']},
+          {type:'warn',title:'Проверка лимита ПУО',desc:'При превышении лимита система должна показать понятное предупреждение и предложить действия.', form:[
+            ['Годовой лимит, т','input','15.0'],['Нарастающий итог, т','input','16.4']
+          ], notice:['warn','Превышен лимит: +1.4 т. UI должен явно объяснять, что делать дальше.']}
+        ]
+      },
+      {
+        label:'Передача подрядчику',
+        desc:'Пользователь оформляет передачу отхода сторонней лицензированной организации.',
+        steps:[
+          {type:'user',title:'Выберите контрагента',desc:'Найдите контрагента в справочнике, проверьте доступность выбора.', form:[
+            ['БИН/Название','input','123456789012'],['Контрагент','select',['ТОО ЭкоТранс','ТОО Рецикл KZ','АО Полигон-Сервис']],
+            ['Номер договора','input','DG-12/2026'],['Дата договора','input','2026-02-14']
+          ]},
+          {type:'doc',title:'Загрузите документы',desc:'Добавьте акт приёма-передачи и при необходимости лицензию.', form:[
+            ['Акт приёма-передачи','input','акт_март.pdf'],['Лицензия контрагента','input','license.pdf'],
+            ['Комментарий','textarea','Партия №3, маршрут С-12']
+          ]},
+          {type:'auto',title:'Пересчёт остатков',desc:'После передачи остаток должен уменьшиться автоматически.', form:[
+            ['Передано, т','input','6.0'],['Остаток до, т','input','16.4'],['Остаток после, т','input','10.4']
+          ]},
+          {type:'warn',title:'Автопроверка лицензии',desc:'Если лицензия просрочена, интерфейс должен подсветить риск.', form:[
+            ['Статус лицензии','select',['Действует','Истекает скоро','Просрочена']],['Дата окончания','input','2026-03-01']
+          ], notice:['warn','Лицензия просрочена. Проверьте, заметно ли предупреждение и следующий шаг.']}
+        ]
+      },
+      {
+        label:'Формирование отчёта',
+        desc:'Финальный сценарий: подготовка отчёта за период и проверка комплектности.',
+        steps:[
+          {type:'user',title:'Выберите тип отчёта и период',desc:'Проверьте, насколько понятна терминология и структура формы.', form:[
+            ['Тип отчёта','select',['Инвентаризация (табл.2/3)','ПЭК-отчёт','Сводный внутренний']],['Период','select',['Q1 2026','Q2 2026']],
+            ['Ответственный','input','Иванова А.А.'],['Email','input','eco@example.com']
+          ]},
+          {type:'auto',title:'Система проверяет комплектность',desc:'Ищет пропущенные акты, пустые реквизиты и несоответствия.', form:[
+            ['Проверено записей','input','24'],['Замечаний найдено','input','3']
+          ], notice:['info','Нажмите «Симулировать автопроверку», чтобы увидеть динамическое сообщение.']},
+          {type:'user',title:'Предпросмотр и экспорт',desc:'Пользователь проверяет итог и скачивает XLSX.', form:[
+            ['Формат','select',['XLSX','PDF (preview)']],['Имя файла','input','report_Q1_2026.xlsx'],['Комментарий к выгрузке','textarea','Версия для внутренней валидации']
+          ]}
+        ]
+      }
     ];
 
     const state = { scenario: 0, step: 0 };
-    const els = {
-      nav: document.getElementById('scenario-nav'), desc: document.getElementById('scenario-desc'),
-      stepTitle: document.getElementById('step-title'), stepTag: document.getElementById('step-tag'),
-      stepDesc: document.getElementById('step-desc'), fakeForm: document.getElementById('fake-form'),
-      stepNotice: document.getElementById('step-notice'), progress: document.getElementById('progress'),
-      stepCount: document.getElementById('step-count'), toast: document.getElementById('toast'),
-      flowView: document.getElementById('flow-view'), regView: document.getElementById('registry-view'),
-      journalView: document.getElementById('journal-view'),
-      modeFlow: document.getElementById('mode-flow'), modeReg: document.getElementById('mode-registry'), modeJournal: document.getElementById('mode-journal'),
-      regBody: document.getElementById('registry-body'),
-      fSearch: document.getElementById('f-search'), fHazard: document.getElementById('f-hazard'),
-      fSite: document.getElementById('f-site'), fLimit: document.getElementById('f-limit'),
-      journalBody: document.getElementById('journal-body'),
-      jPeriod: document.getElementById('j-period'), jType: document.getElementById('j-type'),
-      jSite: document.getElementById('j-site'), jSearch: document.getElementById('j-search')
-    };
 
-    const tagLabel = { user:'пользователь', auto:'авто', doc:'документ', warn:'проверка' };
+    const nav = document.getElementById('scenario-nav');
+    const scenarioDesc = document.getElementById('scenario-desc');
+    const stepTitle = document.getElementById('step-title');
+    const stepTag = document.getElementById('step-tag');
+    const stepDesc = document.getElementById('step-desc');
+    const fakeForm = document.getElementById('fake-form');
+    const stepNotice = document.getElementById('step-notice');
+    const progress = document.getElementById('progress');
+    const stepCount = document.getElementById('step-count');
+    const toast = document.getElementById('toast');
 
-    function showToast(text){ els.toast.textContent = text; els.toast.classList.add('show'); setTimeout(()=>els.toast.classList.remove('show'),1700); }
-
-    function switchMode(mode){
-      const isFlow = mode === 'flow';
-      const isRegistry = mode === 'registry';
-      const isJournal = mode === 'journal';
-      els.flowView.style.display = isFlow ? 'block' : 'none';
-      els.regView.classList.toggle('active', isRegistry);
-      els.journalView.classList.toggle('active', isJournal);
-      els.modeFlow.classList.toggle('active', isFlow);
-      els.modeReg.classList.toggle('active', isRegistry);
-      els.modeJournal.classList.toggle('active', isJournal);
-      showToast(isRegistry ? 'Открыт реестр ПУО' : isJournal ? 'Открыт журнал учёта' : 'Открыты сценарии');
+    function showToast(text) {
+      toast.textContent = text;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 1800);
     }
 
-    function renderNav(){
-      els.nav.innerHTML = scenarios.map((s,i)=>`<button class="scenario-btn ${i===state.scenario?'active':''}" onclick="setScenario(${i})">${s.label}</button>`).join('');
+    function renderNav() {
+      nav.innerHTML = scenarios.map((s, i) => `
+        <button class="scenario-btn ${i===state.scenario?'active':''}" onclick="setScenario(${i})">${s.label}</button>
+      `).join('');
     }
 
     function fieldHtml([label, kind, value]) {
-      if (kind === 'select') return `<div class="field"><label>${label}</label><select>${value.map(v=>`<option>${v}</option>`).join('')}</select></div>`;
-      if (kind === 'textarea') return `<div class="field full"><label>${label}</label><textarea>${value||''}</textarea></div>`;
+      if (kind === 'select') {
+        return `<div class="field"><label>${label}</label><select>${value.map(v => `<option>${v}</option>`).join('')}</select></div>`;
+      }
+      if (kind === 'textarea') {
+        return `<div class="field full"><label>${label}</label><textarea>${value||''}</textarea></div>`;
+      }
       return `<div class="field"><label>${label}</label><input value="${value||''}" /></div>`;
     }
 
-    function renderStep(){
+    function renderStep() {
       const scenario = scenarios[state.scenario];
       const step = scenario.steps[state.step];
-      els.desc.textContent = scenario.desc;
-      els.stepTitle.textContent = step.title;
-      els.stepTag.className = `tag ${step.type}`;
-      els.stepTag.textContent = tagLabel[step.type] || step.type;
-      els.stepDesc.textContent = step.desc || '';
-      els.fakeForm.innerHTML = (step.form || []).map(fieldHtml).join('');
-      els.stepNotice.innerHTML = step.notice ? `<div class="notice ${step.notice[0]}">${step.notice[1]}</div>` : '';
+
+      scenarioDesc.textContent = scenario.desc;
+      stepTitle.textContent = step.title;
+      stepDesc.textContent = step.desc || '';
+      stepTag.className = `tag ${step.type}`;
+      stepTag.textContent = ({user:'пользователь',auto:'авто',doc:'документ',warn:'проверка'})[step.type] || step.type;
+
+      fakeForm.innerHTML = (step.form || []).map(fieldHtml).join('');
+      stepNotice.innerHTML = step.notice ? `<div class="notice ${step.notice[0]}">${step.notice[1]}</div>` : '';
+
       const pct = Math.round(((state.step+1)/scenario.steps.length)*100);
-      els.progress.style.width = pct + '%';
-      els.stepCount.textContent = `Шаг ${state.step+1} из ${scenario.steps.length}`;
+      progress.style.width = `${pct}%`;
+      stepCount.textContent = `Шаг ${state.step+1} из ${scenario.steps.length}`;
+
       document.getElementById('prev-btn').disabled = state.step === 0;
-      document.getElementById('next-btn').textContent = state.step === scenario.steps.length-1 ? 'Завершить сценарий' : 'Далее →';
+      document.getElementById('next-btn').textContent = state.step === scenario.steps.length - 1 ? 'Завершить сценарий' : 'Далее →';
     }
 
-    function setScenario(i){ state.scenario=i; state.step=0; renderNav(); renderStep(); }
-
-    function badge(status){
-      if(status==='ok') return '<span class="chip green">ok</span>';
-      if(status==='near') return '<span class="chip amber">near</span>';
-      return '<span class="chip red">over</span>';
+    function setScenario(i) {
+      state.scenario = i;
+      state.step = 0;
+      renderNav();
+      renderStep();
+      showToast('Сценарий переключён');
     }
 
-    function filteredRows(){
-      const q = els.fSearch.value.trim().toLowerCase();
-      return registryRows.filter(r => {
-        const mQ = !q || r.code.toLowerCase().includes(q) || r.name.toLowerCase().includes(q);
-        const mH = !els.fHazard.value || r.hazard === els.fHazard.value;
-        const mS = !els.fSite.value || r.site === els.fSite.value;
-        const mL = !els.fLimit.value || r.status === els.fLimit.value;
-        return mQ && mH && mS && mL;
-      });
-    }
-
-    function renderRegistry(){
-      const rows = filteredRows();
-      els.regBody.innerHTML = rows.map(r => `
-        <tr>
-          <td>${r.code}</td><td>${r.name}</td><td>${r.hazard}</td><td>${r.site}</td>
-          <td>${r.limit}</td><td>${r.fact}</td><td>${r.docs}</td><td>${badge(r.status)}</td>
-        </tr>
-      `).join('') || '<tr><td colspan="8">Ничего не найдено по фильтрам</td></tr>';
-    }
-
-    function filteredJournalRows(){
-      const q = els.jSearch.value.trim().toLowerCase();
-      return journalRows.filter(r => {
-        const mQ = !q || r.code.toLowerCase().includes(q) || r.name.toLowerCase().includes(q);
-        const mP = !els.jPeriod.value || r.period === els.jPeriod.value;
-        const mT = !els.jType.value || r.op === els.jType.value;
-        const mS = !els.jSite.value || r.site === els.jSite.value;
-        return mQ && mP && mT && mS;
-      });
-    }
-
-    function renderJournal(){
-      const rows = filteredJournalRows();
-      els.journalBody.innerHTML = rows.map(r => `
-        <tr>
-          <td>${r.date}</td><td>${r.period}</td><td>${r.site}</td><td>${r.code}</td><td>${r.name}</td>
-          <td>${r.op}</td><td>${r.qty}</td><td>${r.balance}</td><td>${r.doc}</td>
-        </tr>
-      `).join('') || '<tr><td colspan="9">Ничего не найдено по фильтрам</td></tr>';
-    }
-
-    els.modeFlow.addEventListener('click',()=>switchMode('flow'));
-    els.modeReg.addEventListener('click',()=>switchMode('registry'));
-    els.modeJournal.addEventListener('click',()=>switchMode('journal'));
-
-    document.getElementById('prev-btn').addEventListener('click',()=>{ if(state.step>0){state.step--; renderStep();} });
-    document.getElementById('next-btn').addEventListener('click',()=>{
-      const steps = scenarios[state.scenario].steps;
-      if(state.step<steps.length-1){state.step++; renderStep();}
-      else showToast('Сценарий пройден.');
+    document.getElementById('prev-btn').addEventListener('click', () => {
+      if (state.step > 0) state.step--;
+      renderStep();
     });
-    document.getElementById('simulate-btn').addEventListener('click',()=>{
+
+    document.getElementById('next-btn').addEventListener('click', () => {
+      const steps = scenarios[state.scenario].steps;
+      if (state.step < steps.length - 1) {
+        state.step++;
+        renderStep();
+      } else {
+        showToast('Сценарий пройден. UX-тест завершён.');
+      }
+    });
+
+    document.getElementById('simulate-btn').addEventListener('click', () => {
       const step = scenarios[state.scenario].steps[state.step];
-      els.stepNotice.innerHTML = step.type === 'warn'
-        ? '<div class="notice warn">⚠️ Симуляция: обнаружено критическое замечание.</div>'
-        : '<div class="notice info">✅ Симуляция: ошибок не обнаружено.</div>';
+      if (step.type === 'warn') {
+        stepNotice.innerHTML = `<div class="notice warn">⚠️ Симуляция: обнаружена критическая ошибка в данных. Нужно исправить перед сохранением.</div>`;
+      } else {
+        stepNotice.innerHTML = `<div class="notice info">✅ Симуляция: проверка пройдена, можно продолжать.</div>`;
+      }
       showToast('Автопроверка выполнена');
     });
-    document.getElementById('save-btn').addEventListener('click',()=>showToast('Черновик сохранён локально'));
 
-    [els.fSearch, els.fHazard, els.fSite, els.fLimit].forEach(el => el.addEventListener('input', renderRegistry));
-    document.getElementById('f-reset').addEventListener('click',()=>{
-      els.fSearch.value=''; els.fHazard.value=''; els.fSite.value=''; els.fLimit.value='';
-      renderRegistry(); showToast('Фильтры сброшены');
-    });
-    [els.jPeriod, els.jType, els.jSite, els.jSearch].forEach(el => el.addEventListener('input', renderJournal));
-    document.getElementById('j-reset').addEventListener('click',()=>{
-      els.jPeriod.value=''; els.jType.value=''; els.jSite.value=''; els.jSearch.value='';
-      renderJournal(); showToast('Фильтры журнала сброшены');
+    document.getElementById('save-btn').addEventListener('click', () => {
+      showToast('Черновик сохранён локально (демо-режим)');
     });
 
     renderNav();
     renderStep();
-    renderRegistry();
-    renderJournal();
     window.setScenario = setScenario;
   </script>
 </body>
