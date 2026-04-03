@@ -1,208 +1,276 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Сценарии работы эколога</title>
-<style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f3; color: #1a1a1a; padding: 2rem 1rem; min-height: 100vh; }
-  .container { max-width: 780px; margin: 0 auto; }
-  h1 { font-size: 20px; font-weight: 600; margin-bottom: 4px; }
-  .subtitle { font-size: 14px; color: #888; margin-bottom: 1.5rem; }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>UX-прототип: журнал отходов</title>
+  <style>
+    :root {
+      --bg:#f4f6fb;--card:#ffffff;--text:#1e2633;--muted:#6a7280;--line:#e6ebf3;
+      --blue:#2f6fed;--blue-soft:#eaf1ff;--green:#1f8f4c;--green-soft:#eaf8f0;
+      --amber:#9d6a00;--amber-soft:#fff6dc;--red:#b42318;--red-soft:#ffeceb;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text)}
+    .app{max-width:1200px;margin:0 auto;padding:20px 14px 40px}
+    .top{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+    h1{margin:0;font-size:24px}
+    .sub{color:var(--muted);font-size:14px;margin-top:4px}
+    .pill{background:#fff;border:1px solid var(--line);border-radius:999px;padding:8px 12px;font-size:12px;color:#4a5568}
 
-  .sc-nav { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid #e5e5e2; }
-  .sc-btn { cursor: pointer; padding: 7px 13px; font-size: 13px; font-weight: 500; border: 1px solid #d0cfc7; border-radius: 20px; background: transparent; color: #666; transition: all .15s; white-space: nowrap; }
-  .sc-btn:hover { background: #f0efeb; }
-  .sc-btn.active { background: #dbeafe; color: #1d4ed8; border-color: #93c5fd; }
+    .layout{display:grid;grid-template-columns:270px 1fr;gap:14px}
+    .panel{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:0 8px 24px rgba(16,24,40,.05)}
+    .side{padding:12px}
+    .side h3{margin:6px 6px 10px;font-size:13px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+    .scenario-btn{width:100%;text-align:left;padding:10px;border:1px solid transparent;background:#fff;border-radius:10px;cursor:pointer;margin-bottom:6px;font-size:13px}
+    .scenario-btn:hover{background:#f9fbff;border-color:#e2e8f5}
+    .scenario-btn.active{background:var(--blue-soft);border-color:#c8dafd;color:#1f4fb6;font-weight:600}
 
-  .sc-desc { font-size: 13px; color: #666; margin-bottom: 1.5rem; padding: 10px 14px; background: #f0efeb; border-left: 2px solid #ccc; }
-  .step-wrap { display: flex; flex-direction: column; }
-  .step-row { display: flex; gap: 14px; align-items: flex-start; }
-  .step-left { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; width: 28px; }
-  .step-circle { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; flex-shrink: 0; }
-  .step-circle.user { background: #dbeafe; color: #1d4ed8; border: 1px solid #93c5fd; }
-  .step-circle.auto { background: #dcfce7; color: #166534; border: 1px solid #86efac; }
-  .step-circle.doc  { background: #fef9c3; color: #854d0e; border: 1px solid #fde047; }
-  .step-line { width: 1px; background: #e5e5e2; flex: 1; min-height: 16px; margin: 3px 0; }
-  .step-body { flex: 1; padding-bottom: 20px; }
-  .step-title { font-size: 14px; font-weight: 500; color: #1a1a1a; margin-bottom: 4px; line-height: 1.4; }
-  .step-desc { font-size: 13px; color: #666; line-height: 1.6; }
+    .main{padding:14px}
+    .desc{background:#f8fafd;border:1px solid var(--line);border-left:4px solid #c5d4f5;border-radius:10px;padding:12px;margin-bottom:14px;color:#4d5766;font-size:14px;line-height:1.5}
+    .progress-wrap{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+    .bar{flex:1;height:8px;background:#edf1f8;border-radius:999px;overflow:hidden}
+    .bar > div{height:100%;background:var(--blue);width:0%;transition:width .2s}
+    .step-count{font-size:12px;color:var(--muted)}
 
-  .step-tag { display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 7px; border-radius: 4px; margin-left: 7px; vertical-align: middle; }
-  .tag-auto { background: #dcfce7; color: #166534; }
-  .tag-user { background: #dbeafe; color: #1d4ed8; }
-  .tag-doc  { background: #fef9c3; color: #854d0e; }
-  .tag-warn { background: #fee2e2; color: #991b1b; }
+    .step{border:1px solid var(--line);border-radius:12px;padding:14px;background:#fff}
+    .step-head{display:flex;justify-content:space-between;gap:8px;margin-bottom:8px;align-items:flex-start}
+    .step-title{font-size:17px;margin:0;line-height:1.35}
+    .tag{font-size:11px;font-weight:700;padding:4px 8px;border-radius:999px;white-space:nowrap}
+    .tag.user{background:var(--blue-soft);color:#1f4fb6}
+    .tag.auto{background:var(--green-soft);color:#17653a}
+    .tag.doc{background:var(--amber-soft);color:var(--amber)}
+    .tag.warn{background:var(--red-soft);color:var(--red)}
+    .step-desc{font-size:14px;line-height:1.5;color:#546071;margin:0 0 12px}
 
-  .legend { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid #e5e5e2; }
-  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #888; }
+    .fake-form{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:8px}
+    .field{border:1px solid var(--line);border-radius:10px;padding:10px;background:#fbfcff}
+    .field label{display:block;font-size:12px;color:#687385;margin-bottom:6px}
+    .field input,.field select,.field textarea{width:100%;border:1px solid #d6deeb;border-radius:8px;padding:8px;font-size:13px;background:#fff}
+    .field textarea{min-height:74px;resize:vertical}
+    .full{grid-column:1/-1}
 
-  .card { background: #fff; border: 1px solid #e5e5e2; border-radius: 12px; padding: 1.5rem; }
-</style>
+    .notice{border:1px solid transparent;border-radius:10px;padding:10px;font-size:13px;margin-top:8px}
+    .notice.info{background:#f4f8ff;border-color:#d7e4ff;color:#2b4a88}
+    .notice.warn{background:var(--red-soft);border-color:#f7c5c0;color:#8e1d13}
+
+    .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+    button{cursor:pointer;border-radius:10px;border:1px solid transparent;padding:9px 13px;font-size:13px}
+    .btn-primary{background:var(--blue);color:#fff}
+    .btn-secondary{background:#fff;border-color:#d6deeb;color:#354052}
+    .btn-ghost{background:#f8fafd;border-color:#e5ebf5;color:#3f4b5f}
+
+    .toast{position:fixed;right:16px;bottom:16px;background:#1f2937;color:#fff;padding:10px 12px;border-radius:10px;font-size:13px;opacity:0;transform:translateY(8px);transition:.2s;pointer-events:none}
+    .toast.show{opacity:1;transform:translateY(0)}
+
+    @media (max-width: 900px){
+      .layout{grid-template-columns:1fr}
+      .fake-form{grid-template-columns:1fr}
+      .side{position:sticky;top:0;z-index:2}
+    }
+  </style>
 </head>
 <body>
-<div class="container">
-  <h1>Сценарии работы эколога</h1>
-  <p class="subtitle">Пошаговый порядок действий при каждой операции с отходами</p>
-  <div class="card">
-    <div class="sc-nav" id="nav"></div>
-    <div id="sc-body"></div>
-    <div class="legend">
-      <div class="legend-item"><span class="step-tag tag-user">пользователь</span> вводит вручную</div>
-      <div class="legend-item"><span class="step-tag tag-auto">авто</span> система делает сама</div>
-      <div class="legend-item"><span class="step-tag tag-doc">документ</span> нужно прикрепить файл</div>
-      <div class="legend-item"><span class="step-tag tag-warn">проверка</span> система сигнализирует</div>
+  <div class="app">
+    <div class="top">
+      <div>
+        <h1>UX-прототип: журнал операций с отходами</h1>
+        <div class="sub">Полностью кликабельный прототип без бэкенда — для тестирования удобства интерфейса.</div>
+      </div>
+      <div class="pill">Режим теста: данные не сохраняются в БД</div>
+    </div>
+
+    <div class="layout">
+      <aside class="panel side">
+        <h3>Сценарии</h3>
+        <div id="scenario-nav"></div>
+      </aside>
+
+      <main class="panel main">
+        <div class="desc" id="scenario-desc"></div>
+        <div class="progress-wrap">
+          <div class="bar"><div id="progress"></div></div>
+          <div class="step-count" id="step-count"></div>
+        </div>
+
+        <section class="step">
+          <div class="step-head">
+            <h2 class="step-title" id="step-title"></h2>
+            <span class="tag" id="step-tag"></span>
+          </div>
+          <p class="step-desc" id="step-desc"></p>
+
+          <div class="fake-form" id="fake-form"></div>
+          <div id="step-notice"></div>
+
+          <div class="actions">
+            <button class="btn-secondary" id="prev-btn">← Назад</button>
+            <button class="btn-primary" id="next-btn">Далее →</button>
+            <button class="btn-ghost" id="simulate-btn">Симулировать автопроверку</button>
+            <button class="btn-ghost" id="save-btn">Сохранить как черновик</button>
+          </div>
+        </section>
+      </main>
     </div>
   </div>
-</div>
+  <div class="toast" id="toast"></div>
 
-<script>
-const scenarios = [
-  {
-    label: 'Образование отхода',
-    desc: 'Отход возник в результате производственного процесса — нужно зафиксировать факт в журнале.',
-    steps: [
-      { type: 'user', title: 'Открыть журнал движения → «Добавить запись»', desc: 'Эколог выбирает нужный объект (предприятие) и нажимает «Добавить запись».' },
-      { type: 'user', title: 'Выбрать вид отхода из списка', desc: 'Список уже заполнен из ПУО. Эколог просто выбирает нужный вид — код, группа, подгруппа и класс опасности подставляются автоматически.', tag: 'auto' },
-      { type: 'user', title: 'Выбрать отчётный период и указать дату', desc: 'Месяц или квартал — в зависимости от настройки объекта. Дату ставит эколог.' },
-      { type: 'auto', title: 'Остаток на начало подтягивается автоматически', desc: 'Система берёт «остаток на конец» из предыдущей записи этого же вида отхода. При первой записи — поле открыто для ввода.', tag: 'auto' },
-      { type: 'user', title: 'Ввести количество образованного отхода (тонны)', desc: 'Единственное числовое поле, которое вводит эколог.' },
-      { type: 'auto', title: 'Система пересчитывает остаток на конец', desc: 'Остаток на конец = начало + образовано. Пересчёт в реальном времени.', tag: 'auto' },
-      { type: 'auto', title: 'Проверка лимита из ПУО', desc: 'Если нарастающее образование за год превышает лимит — появляется предупреждение. Запись сохраняется, но помечается.', tag: 'warn' },
-      { type: 'user', title: 'Сохранить запись', desc: 'Запись фиксируется в журнале. Данные готовы для попадания в отчёт.' },
-    ]
-  },
-  {
-    label: 'Передача подрядчику',
-    desc: 'Предприятие передаёт отход лицензированной организации — на переработку, обезвреживание или полигон.',
-    steps: [
-      { type: 'user', title: 'Открыть запись нужного вида отхода за период', desc: 'Найти в журнале существующую запись или создать новую, если за этот период записи ещё не было.' },
-      { type: 'user', title: 'Развернуть раздел «Передача»', desc: 'Разделы записи свёрнуты по умолчанию. Эколог раскрывает только нужный.' },
-      { type: 'user', title: 'Ввести количество переданного отхода (тонны)', desc: 'Общее количество. Если часть идёт на экспорт — отдельное поле «из них по экспорту».' },
-      { type: 'user', title: 'Выбрать контрагента из справочника', desc: 'Поиск по БИН или названию. Наименование подставляется автоматически после выбора.', tag: 'auto' },
-      { type: 'auto', title: 'Проверка лицензии контрагента', desc: 'Если лицензия истекла или отсутствует — система показывает предупреждение.', tag: 'warn' },
-      { type: 'user', title: 'Указать номер и реквизиты договора', desc: 'Обязательное поле — попадает в отчётную форму в столбец «договор сделки об отчуждении».' },
-      { type: 'doc',  title: 'Прикрепить акт приёма-передачи', desc: 'Скан или PDF. При первой передаче этому контрагенту — также копия его лицензии.', tag: 'doc' },
-      { type: 'auto', title: 'Остаток на конец пересчитан', desc: 'Переданное вычитается из остатка автоматически.', tag: 'auto' },
-      { type: 'user', title: 'Сохранить запись', desc: 'Контрагент, количество и договор зафиксированы. Готово для отчёта.' },
-    ]
-  },
-  {
-    label: 'Получение от контрагента',
-    desc: 'Предприятие принимает отходы от другого юридического или физического лица.',
-    steps: [
-      { type: 'user', title: 'Открыть или создать запись за период', desc: 'Выбрать вид принимаемого отхода. Если за период запись уже есть — открыть её.' },
-      { type: 'user', title: 'Развернуть раздел «Получено»', desc: '' },
-      { type: 'user', title: 'Ввести количество полученного отхода (тонны)', desc: 'Общее количество. Если поступление из-за рубежа — отдельное поле «из них по импорту».' },
-      { type: 'user', title: 'Выбрать контрагента-отправителя из справочника', desc: 'Поиск по БИН. Если контрагент новый — сначала добавить в справочник.' },
-      { type: 'user', title: 'Указать реквизиты договора получения', desc: 'Номер и дата договора — обязательное поле для отчёта.' },
-      { type: 'doc',  title: 'Прикрепить акт и паспорт отхода от отправителя', desc: 'Паспорт опасного отхода обязателен если принимается опасный отход.', tag: 'doc' },
-      { type: 'auto', title: 'Остаток на конец пересчитан', desc: 'Полученное прибавляется к остатку.', tag: 'auto' },
-      { type: 'user', title: 'Сохранить запись', desc: '' },
-    ]
-  },
-  {
-    label: 'Восстановление / переработка',
-    desc: 'Предприятие само перерабатывает отход: повторно использует, перерабатывает, утилизирует или обезвреживает.',
-    steps: [
-      { type: 'user', title: 'Открыть запись нужного вида отхода за период', desc: '' },
-      { type: 'user', title: 'Развернуть раздел «Восстановлено»', desc: '' },
-      { type: 'user', title: 'Выбрать технологию восстановления', desc: 'Список технологий загружен из ПУО. Варианты: повторно использовано, переработано, утилизировано, с извлечением энергии, другим способом.' },
-      { type: 'user', title: 'Ввести количество по каждому способу (тонны)', desc: 'Заполняются только применимые строки. Остальные оставить пустыми.' },
-      { type: 'user', title: 'Для неопасных: заполнить «перешло в вторсырьё» и «отсортировано»', desc: 'Эти два поля присутствуют только в журнале неопасных отходов.' },
-      { type: 'auto', title: 'Остаток на конец пересчитан', desc: 'Восстановленное вычитается из остатка.', tag: 'auto' },
-      { type: 'user', title: 'Сохранить запись', desc: 'Технология фиксируется для ПЭК-отчёта.' },
-    ]
-  },
-  {
-    label: 'Удаление на объекте',
-    desc: 'Отход захоронен или уничтожен на собственном объекте предприятия — полигоне, хвостохранилище.',
-    steps: [
-      { type: 'user', title: 'Открыть запись нужного вида отхода за период', desc: '' },
-      { type: 'user', title: 'Развернуть раздел «Удалено»', desc: '' },
-      { type: 'user', title: 'Выбрать объект удаления из справочника', desc: 'Список объектов загружен из ПУО: полигоны, хвостохранилища, другие. Характеристики объекта видны рядом.' },
-      { type: 'user', title: 'Ввести количество захороненного / уничтоженного (тонны)', desc: 'Два отдельных поля — «захоронено» и «уничтожено».' },
-      { type: 'auto', title: 'Система обновляет заполненность объекта удаления', desc: 'Добавляет количество к текущей заполненности полигона. При приближении к проектной мощности — предупреждение.', tag: 'warn' },
-      { type: 'auto', title: 'Остаток на конец пересчитан', desc: 'Удалённое вычитается из остатка.', tag: 'auto' },
-      { type: 'user', title: 'Сохранить запись', desc: '' },
-    ]
-  },
-  {
-    label: 'Накопление',
-    desc: 'Отход временно накапливается на территории предприятия для последующей передачи или переработки.',
-    steps: [
-      { type: 'user', title: 'Открыть запись нужного вида отхода за период', desc: '' },
-      { type: 'user', title: 'Развернуть раздел «Накоплено»', desc: '' },
-      { type: 'user', title: 'Ввести количество накопленного (тонны)', desc: 'Объём, который предприятие намеренно удерживает для последующей передачи или восстановления.' },
-      { type: 'auto', title: 'Накопленное остаётся в остатке на конец периода', desc: 'В отличие от передачи и удаления, накопление не вычитается из остатка — оно остаётся на балансе предприятия.', tag: 'auto' },
-      { type: 'user', title: 'Сохранить запись', desc: 'В отчёте накопленное отражается отдельной колонкой.' },
-    ]
-  },
-  {
-    label: 'Учёт ТМО',
-    desc: 'Остатки производства (хвосты, шлаки, некондиционная руда) с ценным компонентом — хранятся отдельно от отходов.',
-    steps: [
-      { type: 'user', title: 'Перейти в модуль «ТМО / вторсырьё»', desc: 'Это отдельный раздел системы — не журнал отходов.' },
-      { type: 'user', title: 'Создать запись ТМО', desc: 'Указать наименование, место хранения, цель хранения (обязательно — обоснование почему это не отход).' },
-      { type: 'user', title: 'Ввести объём на начало периода и поступление за период (тонны)', desc: '' },
-      { type: 'doc',  title: 'Прикрепить нормативный документ / приказ', desc: 'Основание для хранения — внутренний приказ или распоряжение о дальнейшем использовании.', tag: 'doc' },
-      { type: 'user', title: 'Указать плановую дату переработки', desc: 'Рекомендуется — система будет напоминать по мере приближения даты.' },
-      { type: 'auto', title: 'Объём на конец рассчитан', desc: 'Конец = начало + поступило − передано на переработку.', tag: 'auto' },
-      { type: 'user', title: 'Сохранить', desc: 'Данные попадают в раздел ТМО ПЭК-отчёта, не в таблицы отходов.' },
-    ]
-  },
-  {
-    label: 'Формирование отчёта',
-    desc: 'Конец периода — закрыть журнал и сформировать отчётные формы для регулятора.',
-    steps: [
-      { type: 'user', title: 'Открыть сводный журнал за период', desc: 'Просмотреть все виды отходов. Убедиться, что каждый вид имеет запись.' },
-      { type: 'auto', title: 'Система показывает виды без записей и предупреждения', desc: 'Виды отходов из ПУО без записи за период — помечены. Превышения лимитов — отмечены красным.', tag: 'warn' },
-      { type: 'user', title: 'Перейти в «Отчёты» → выбрать тип и период', desc: 'Доступны: Отчёт по инвентаризации (таблицы 2 и 3), данные для ПЭК-отчёта, вспомогательные отчёты.' },
-      { type: 'auto', title: 'Система собирает данные и проверяет комплектность', desc: 'Проверяет: у всех передач есть акты, у всех контрагентов заполнены реквизиты. Выдаёт список проблем.', tag: 'warn' },
-      { type: 'user', title: 'Устранить замечания (если есть)', desc: 'Перейти к проблемным записям по прямым ссылкам из списка замечаний. Прикрепить недостающие документы.' },
-      { type: 'user', title: 'Нажать «Сформировать» → просмотреть предпросмотр', desc: 'Отчёт отображается в браузере до скачивания.' },
-      { type: 'user', title: 'Скачать xlsx в формате регулятора', desc: 'Лист 1 — общие сведения, Таблица 2 — опасные, Таблица 3 — неопасные. Данные из карточки объекта подставлены автоматически.', tag: 'auto' },
-      { type: 'user', title: 'Закрыть период', desc: 'После закрытия записи защищены от изменений. Остатки автоматически переносятся как начало следующего периода.', tag: 'auto' },
-    ]
-  },
-];
+  <script>
+    const scenarios = [
+      {
+        label:'Образование отхода',
+        desc:'Фиксация нового образования отхода в журнале. Проверьте, насколько понятны поля и подсказки пользователю.',
+        steps:[
+          {type:'user',title:'Выберите объект и вид отхода',desc:'Пользователь выбирает площадку и тип отхода. Система подставляет классификатор автоматически.', form:[
+            ['Объект','select',['Площадка №1','Площадка №2']],['Вид отхода','select',['Отработанное масло','Строительный мусор','Шлам']],
+            ['Код отхода','input','12 01 09'],['Класс опасности','select',['I','II','III','IV','V']]
+          ], notice:['info','Подсказка: упростите поиск вида отхода по коду или части названия.']},
+          {type:'user',title:'Укажите период и объём',desc:'Ввод минимального набора данных для первичной записи.', form:[
+            ['Период','select',['Январь 2026','Февраль 2026','Март 2026']],['Дата записи','input','2026-03-31'],
+            ['Количество, т','input','12.4'],['Ед. изм.','select',['тонны','кг']]
+          ]},
+          {type:'auto',title:'Система пересчитывает остаток',desc:'Остаток на конец пересчитывается в реальном времени и отображается справа.', form:[
+            ['Остаток на начало, т','input','4.0'],['Образовано, т','input','12.4'],['Остаток на конец, т','input','16.4'],
+          ], notice:['info','Автоматическая формула: остаток = начало + образовано.']},
+          {type:'warn',title:'Проверка лимита ПУО',desc:'При превышении лимита система должна показать понятное предупреждение и предложить действия.', form:[
+            ['Годовой лимит, т','input','15.0'],['Нарастающий итог, т','input','16.4']
+          ], notice:['warn','Превышен лимит: +1.4 т. UI должен явно объяснять, что делать дальше.']}
+        ]
+      },
+      {
+        label:'Передача подрядчику',
+        desc:'Пользователь оформляет передачу отхода сторонней лицензированной организации.',
+        steps:[
+          {type:'user',title:'Выберите контрагента',desc:'Найдите контрагента в справочнике, проверьте доступность выбора.', form:[
+            ['БИН/Название','input','123456789012'],['Контрагент','select',['ТОО ЭкоТранс','ТОО Рецикл KZ','АО Полигон-Сервис']],
+            ['Номер договора','input','DG-12/2026'],['Дата договора','input','2026-02-14']
+          ]},
+          {type:'doc',title:'Загрузите документы',desc:'Добавьте акт приёма-передачи и при необходимости лицензию.', form:[
+            ['Акт приёма-передачи','input','акт_март.pdf'],['Лицензия контрагента','input','license.pdf'],
+            ['Комментарий','textarea','Партия №3, маршрут С-12']
+          ]},
+          {type:'auto',title:'Пересчёт остатков',desc:'После передачи остаток должен уменьшиться автоматически.', form:[
+            ['Передано, т','input','6.0'],['Остаток до, т','input','16.4'],['Остаток после, т','input','10.4']
+          ]},
+          {type:'warn',title:'Автопроверка лицензии',desc:'Если лицензия просрочена, интерфейс должен подсветить риск.', form:[
+            ['Статус лицензии','select',['Действует','Истекает скоро','Просрочена']],['Дата окончания','input','2026-03-01']
+          ], notice:['warn','Лицензия просрочена. Проверьте, заметно ли предупреждение и следующий шаг.']}
+        ]
+      },
+      {
+        label:'Формирование отчёта',
+        desc:'Финальный сценарий: подготовка отчёта за период и проверка комплектности.',
+        steps:[
+          {type:'user',title:'Выберите тип отчёта и период',desc:'Проверьте, насколько понятна терминология и структура формы.', form:[
+            ['Тип отчёта','select',['Инвентаризация (табл.2/3)','ПЭК-отчёт','Сводный внутренний']],['Период','select',['Q1 2026','Q2 2026']],
+            ['Ответственный','input','Иванова А.А.'],['Email','input','eco@example.com']
+          ]},
+          {type:'auto',title:'Система проверяет комплектность',desc:'Ищет пропущенные акты, пустые реквизиты и несоответствия.', form:[
+            ['Проверено записей','input','24'],['Замечаний найдено','input','3']
+          ], notice:['info','Нажмите «Симулировать автопроверку», чтобы увидеть динамическое сообщение.']},
+          {type:'user',title:'Предпросмотр и экспорт',desc:'Пользователь проверяет итог и скачивает XLSX.', form:[
+            ['Формат','select',['XLSX','PDF (preview)']],['Имя файла','input','report_Q1_2026.xlsx'],['Комментарий к выгрузке','textarea','Версия для внутренней валидации']
+          ]}
+        ]
+      }
+    ];
 
-const tagMap   = { auto: 'tag-auto', user: 'tag-user', doc: 'tag-doc', warn: 'tag-warn' };
-const labelMap = { auto: 'авто', user: 'пользователь', doc: 'документ', warn: 'проверка' };
-let current = 0;
+    const state = { scenario: 0, step: 0 };
 
-function renderNav() {
-  document.getElementById('nav').innerHTML = scenarios.map((s, i) =>
-    `<button class="sc-btn${i === current ? ' active' : ''}" onclick="setScenario(${i})">${s.label}</button>`
-  ).join('');
-}
+    const nav = document.getElementById('scenario-nav');
+    const scenarioDesc = document.getElementById('scenario-desc');
+    const stepTitle = document.getElementById('step-title');
+    const stepTag = document.getElementById('step-tag');
+    const stepDesc = document.getElementById('step-desc');
+    const fakeForm = document.getElementById('fake-form');
+    const stepNotice = document.getElementById('step-notice');
+    const progress = document.getElementById('progress');
+    const stepCount = document.getElementById('step-count');
+    const toast = document.getElementById('toast');
 
-function renderBody() {
-  const s = scenarios[current];
-  let html = `<div class="sc-desc">${s.desc}</div><div class="step-wrap">`;
-  s.steps.forEach((step, i) => {
-    const isLast = i === s.steps.length - 1;
-    const extraTag = step.tag ? `<span class="step-tag ${tagMap[step.tag]}">${labelMap[step.tag]}</span>` : '';
-    html += `<div class="step-row">
-      <div class="step-left">
-        <div class="step-circle ${step.type}">${i + 1}</div>
-        ${!isLast ? '<div class="step-line"></div>' : ''}
-      </div>
-      <div class="step-body">
-        <p class="step-title">${step.title}${extraTag}</p>
-        ${step.desc ? `<p class="step-desc">${step.desc}</p>` : ''}
-      </div>
-    </div>`;
-  });
-  html += '</div>';
-  document.getElementById('sc-body').innerHTML = html;
-}
+    function showToast(text) {
+      toast.textContent = text;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 1800);
+    }
 
-function setScenario(i) { current = i; renderNav(); renderBody(); }
+    function renderNav() {
+      nav.innerHTML = scenarios.map((s, i) => `
+        <button class="scenario-btn ${i===state.scenario?'active':''}" onclick="setScenario(${i})">${s.label}</button>
+      `).join('');
+    }
 
-renderNav();
-renderBody();
-</script>
+    function fieldHtml([label, kind, value]) {
+      if (kind === 'select') {
+        return `<div class="field"><label>${label}</label><select>${value.map(v => `<option>${v}</option>`).join('')}</select></div>`;
+      }
+      if (kind === 'textarea') {
+        return `<div class="field full"><label>${label}</label><textarea>${value||''}</textarea></div>`;
+      }
+      return `<div class="field"><label>${label}</label><input value="${value||''}" /></div>`;
+    }
+
+    function renderStep() {
+      const scenario = scenarios[state.scenario];
+      const step = scenario.steps[state.step];
+
+      scenarioDesc.textContent = scenario.desc;
+      stepTitle.textContent = step.title;
+      stepDesc.textContent = step.desc || '';
+      stepTag.className = `tag ${step.type}`;
+      stepTag.textContent = ({user:'пользователь',auto:'авто',doc:'документ',warn:'проверка'})[step.type] || step.type;
+
+      fakeForm.innerHTML = (step.form || []).map(fieldHtml).join('');
+      stepNotice.innerHTML = step.notice ? `<div class="notice ${step.notice[0]}">${step.notice[1]}</div>` : '';
+
+      const pct = Math.round(((state.step+1)/scenario.steps.length)*100);
+      progress.style.width = `${pct}%`;
+      stepCount.textContent = `Шаг ${state.step+1} из ${scenario.steps.length}`;
+
+      document.getElementById('prev-btn').disabled = state.step === 0;
+      document.getElementById('next-btn').textContent = state.step === scenario.steps.length - 1 ? 'Завершить сценарий' : 'Далее →';
+    }
+
+    function setScenario(i) {
+      state.scenario = i;
+      state.step = 0;
+      renderNav();
+      renderStep();
+      showToast('Сценарий переключён');
+    }
+
+    document.getElementById('prev-btn').addEventListener('click', () => {
+      if (state.step > 0) state.step--;
+      renderStep();
+    });
+
+    document.getElementById('next-btn').addEventListener('click', () => {
+      const steps = scenarios[state.scenario].steps;
+      if (state.step < steps.length - 1) {
+        state.step++;
+        renderStep();
+      } else {
+        showToast('Сценарий пройден. UX-тест завершён.');
+      }
+    });
+
+    document.getElementById('simulate-btn').addEventListener('click', () => {
+      const step = scenarios[state.scenario].steps[state.step];
+      if (step.type === 'warn') {
+        stepNotice.innerHTML = `<div class="notice warn">⚠️ Симуляция: обнаружена критическая ошибка в данных. Нужно исправить перед сохранением.</div>`;
+      } else {
+        stepNotice.innerHTML = `<div class="notice info">✅ Симуляция: проверка пройдена, можно продолжать.</div>`;
+      }
+      showToast('Автопроверка выполнена');
+    });
+
+    document.getElementById('save-btn').addEventListener('click', () => {
+      showToast('Черновик сохранён локально (демо-режим)');
+    });
+
+    renderNav();
+    renderStep();
+    window.setScenario = setScenario;
+  </script>
 </body>
 </html>
